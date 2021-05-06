@@ -1,5 +1,6 @@
 import './App.css';
-import imageFile from './no-image.png'
+import swal from 'sweetalert';
+import imageFile from './no-image.png';
 
 function App() {
   var topFiveMovieList = [];
@@ -32,26 +33,37 @@ function App() {
                 <div class="img__wrap">
                   <img class="img__img" src=` + movie['Poster'] + `/>
                   <div class="img__description_layer">
-                    <div class="img__description">` +
-                  imdbData['Plot'] + `<br /><button id="` + movie['imdbID'] + `" class="nominate-button"><span>Nominate</span></button>` +
+                    <div class="img__description" id="` + movie['imdbID'] + `-image-description">` +
+                  imdbData['Plot'] + `<br />` + addNominateButton(movie['imdbID']) +
                   `</div>
                   </div>
                 </div>`;
-                document.getElementById(movie['imdbID']).addEventListener("click", function () {
-                  addNomination(movie);
-                });
+                if (!checkNominationListItems(movie['imdbID'])) {
+                  document.getElementById(movie['imdbID']).addEventListener("click", function () {
+                    addNomination(movie);
+                  });
+                }
               })
             })
           }
           else {
-            alert(data['Error']);
+            swal({
+              icon: 'error',
+              title: data['Error'],
+              text: 'Please enter a new search term!'
+            });
           }
         });
     }
     else {
-      alert("Please enter a search term!");
+      swal("Didn't quite get that", "Please enter a search term!", "info");
     }
   };
+
+  function addNominateButton(movieIMDB) {
+    if (checkNominationListItems(movieIMDB)) return '';
+    return `<button id="` + movieIMDB + `" class="nominate-button"><span>Nominate</span></button>`;
+  }
 
   function addNomination(movie) {
     if (!checkNominationsList(movie['imdbID'])) {
@@ -63,10 +75,34 @@ function App() {
       node.innerHTML = `<img class="nomination-image" src=` + movie['Poster'] + `alt=` + movie['Title'] + `/><button class="nominate-button" id="` + movie['imdbID'] + `-button" >Remove</button>`;
       list.appendChild(node);
       document.getElementById(movie['imdbID'] + "-button").addEventListener("click", function () {
-        removeFromNominationsList(movie['imdbID']);
+        removeFromNominationsList(movie);
       });
       topFiveMovieList.push(movie);
+      removeButton(movie['imdbID']);
       updateLocalStorage();
+      if (topFiveMovieList.length === 5) {
+        swal("Congrats!","You have successfully nominated your top 5 movies for The Shoppies!", "success")
+      }
+    }
+    else {
+      swal("Nomination list is full!", "Please remove a movie to add a new movie", "warning");
+    }
+  }
+
+  function removeButton(movieIMDB) {
+    var resultButton = document.querySelector('[id=' + movieIMDB + ']');
+    resultButton.parentNode.removeChild(resultButton);
+  }
+
+  function restoreButton(movie) {
+    var movieIMDB = movie['imdbID'];
+    var imageDescription = document.getElementById(movieIMDB + "-image-description");
+    if (imageDescription) {
+      imageDescription.innerHTML += `<button id="` + movieIMDB + `" class="nominate-button"><span>Nominate</span></button>`;
+      var resultButton = document.querySelector('[id=' + movieIMDB + ']');
+      resultButton.addEventListener("click", function () {
+        addNomination(movie);
+      });
     }
   }
 
@@ -89,7 +125,7 @@ function App() {
   function checkNominationsList(movieIMDB) {
     var list = document.getElementsByClassName("nomination");
     if (list.length >= 5) {
-      alert("Nomination List is full, please remove a movie before nominating another one");
+      swal("Nomination List is full, please remove a movie before nominating another one");
       return true;
     }
     else {
@@ -102,16 +138,27 @@ function App() {
     }
   }
 
-  function removeFromNominationsList(movieIMDB) {
+  function checkNominationListItems(movieIMDB) {
+    var list = document.getElementsByClassName("nomination");
+    for (var i = 0; i < list.length; i++) {
+      if (movieIMDB + "-nomination-item" === list[i].id) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function removeFromNominationsList(movie) {
+    var movieIMDB = movie['imdbID'];
     var nomination = document.querySelector('[id=' + movieIMDB + '-nomination-item]');
     nomination.parentNode.removeChild(nomination);
     for (var i = 0; i < topFiveMovieList.length; i++) {
       if (topFiveMovieList[i]['imdbID'] === movieIMDB) {
         topFiveMovieList.splice(i, 1);
         updateLocalStorage();
-        return;
       }
     }
+    restoreButton(movie);
   }
 
   function getLocalStorage() {
@@ -154,9 +201,9 @@ function App() {
         <ul id="nominations-list-items" className="nominations-list-items">
           {topFiveMovieList.map((movie, index) => {
             return <li key={index} id={movie["imdbID"] + "-nomination-item"} title={movie["Title"]} className="nomination">
-              <img className="nomination-image" src={movie['Poster']} alt={movie['Title']}/>
-              <button className="nominate-button" onClick={()=> removeFromNominationsList(movie['imdbID'])} id={movie['imdbID'] + `-button`} >Remove</button>
-              </li>
+              <img className="nomination-image" src={movie['Poster']} alt={movie['Title']} />
+              <button className="nominate-button" onClick={() => removeFromNominationsList(movie)} id={movie['imdbID'] + `-button`} >Remove</button>
+            </li>
           })}
         </ul>
       </div>

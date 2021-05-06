@@ -218,8 +218,19 @@ header .overlay {
   .nomination-list {
     position: absolute;
     display: inline-block;
+    height: 70%;
+    overflow: scroll;
   }
-  
+  .nomination-list::-webkit-scrollbar {
+    width: 5px;
+    height: 8px;
+    background-color: 0% #FFFFFF;
+}
+
+.nomination-list::-webkit-scrollbar-thumb {
+    background: #002e25;
+}
+
   .nomination-list-content {
     display: none;
     position: absolute;
