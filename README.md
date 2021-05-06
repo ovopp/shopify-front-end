@@ -4,7 +4,7 @@
 ## Tech Description
 This application is hosted on Heroku and is built on the ReactJs framework.\
 
-[Hosted Site]{https://vyan-shoppies.herokuapp.com}
+[Hosted Site](https://vyan-shoppies.herokuapp.com)
 
 
 Learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
