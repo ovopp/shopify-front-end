@@ -225,7 +225,7 @@ header .overlay {
     position: absolute;
     background-color: #1d1818;
     min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 8px 16px 0px rgba(250, 213, 213, 0.2);
     z-index: 1;
   }
   
@@ -257,4 +257,5 @@ header .overlay {
   .nomination-image{
     width: 120px;
     height: 153px;
+    border-radius: 10%;
   }

@@ -8,7 +8,7 @@ function App() {
     var table = document.getElementById("result-table");
     var movieName = document.getElementById("movie-name").value;
     if (movieName !== "") {
-      var url = `http://www.omdbapi.com/?apikey=` + process.env.REACT_APP_OMDBKEY + `&s=` + movieName;
+      var url = `https://www.omdbapi.com/?apikey=47a5e075&s=` + movieName;
       fetch(url).then((response) =>
         response.json()).then(function (data) {
           console.log(data);
@@ -20,7 +20,7 @@ function App() {
             row.insertCell(0).innerHTML = "Movie";
             row.insertCell(1).innerHTML = "Poster and Plot";
             listOfMovies.forEach(movie => {
-              var imdburl = `http://www.omdbapi.com/?apikey=` + process.env.REACT_APP_OMDBKEY + `&i=` + movie['imdbID'];
+              var imdburl = `https://www.omdbapi.com/?apikey=47a5e075&i=` + movie['imdbID'];
               fetch(imdburl).then((response) => response.json()).then(function (imdbData) {
                 if (movie['Poster'] === "N/A") {
                   movie['Poster'] = { imageFile }["imageFile"];
